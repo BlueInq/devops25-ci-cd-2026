@@ -1,0 +1,30 @@
+name: CD simulated
+
+on:
+  push:
+    branches:
+      - demo/dag5
+  workflow_dispatch:
+
+jobs:
+  deploy-to-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Build image
+        run: docker build -t devops25-cicd-demo:test .
+
+      - name: Start container
+        run: docker run -d --name app -p 8000:8000 devops25-cicd-demo:test
+
+      - name: Verify deployment
+        run: bash scripts/verify.sh http://127.0.0.1:8000/health
+
+      - name: Explain why
+        run: echo "Deployment should only continue when verification creates enough confidence."
+
+      - name: Stop application
+        if: always()
+        run: docker rm -f app || true
