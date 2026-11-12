@@ -19,6 +19,9 @@ jobs:
       - name: Start container
         run: docker run -d --name app -p 8000:8000 devops25-cicd-demo:test
 
+      - name: Wait for application
+        run: sleep 5
+
       - name: Verify deployment
         run: bash scripts/verify.sh http://127.0.0.1:8000/health
 
